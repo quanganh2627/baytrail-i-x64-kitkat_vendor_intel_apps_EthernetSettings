@@ -44,6 +44,7 @@ public class EthernetDialog extends AlertDialog implements EthernetConfigUiBase 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         mView = getLayoutInflater().inflate(R.layout.ethernet_dialog, null);
+        if (mView == null) return;
         setView(mView);
         setInverseBackgroundForced(true);
         mController = new EthernetConfigController(this, mView, mEthernetManager);

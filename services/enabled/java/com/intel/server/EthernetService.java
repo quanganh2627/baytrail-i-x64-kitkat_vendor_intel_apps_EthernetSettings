@@ -191,10 +191,6 @@ public class EthernetService extends IEthernetManager.Stub {
         public void interfaceClassDataActivityChanged(String label, boolean active) {}
         public void interfaceLinkStateChanged(String iface, boolean up) {
             if (DBG) Slog.d(TAG, "interfaceLinkStateChanged for " + iface + ", up = " + up);
-            if (mAvailableInterface != null && up) {
-                //sendMessage(mAvailableInterface,
-                //EthernetStateMachine.CMD_LINK_UP);
-            }
         }
         public void interfaceStatusChanged(String iface, boolean up) {
             if (DBG) Slog.d(TAG, "interfaceStatusChanged for " + iface + ", up = " + up);
@@ -211,10 +207,12 @@ public class EthernetService extends IEthernetManager.Stub {
     private class InterfaceStateReceiver extends BroadcastReceiver {
         @Override
         public void onReceive(Context context, Intent intent) {
+            if (intent.getAction() == null) return;
             Slog.d(TAG, "InterfaceStateReceiver onReceive intent.getAction() " + intent.getAction());
             if (intent.getAction().equals(EthernetManager.INTERFACE_STATE_CHANGED_ACTION)) {
                 EthernetInfo ei = intent.getParcelableExtra(
                         EthernetManager.EXTRA_ETHERNET_INFO);
+                if (ei == null) return;
                 Slog.d(TAG, "InterfaceStateReceiver onReceive EthernetInfo " + ei);
                 String name = ei.getName();
                 if (DBG) Slog.d(TAG, "INTERFACE_STATE_CHANGED_ACTION: "  + name);
@@ -304,7 +302,7 @@ public class EthernetService extends IEthernetManager.Stub {
             if (DBG) Slog.d(TAG, "Found " + iface + " in mUnavailableInterfaces");
             if (mAvailableInterface == null) { // Nothing currently active
                 EthernetInfo ei = mUnavailableInterfaces.get(hwAddr);
-
+                if (ei == null) return;
                 // Interface name may have changed since last time due to
                 // device insertion order, etc.:
                 ei.setName(iface);
@@ -356,7 +354,13 @@ public class EthernetService extends IEthernetManager.Stub {
         } catch (Exception e) {
             Slog.e(TAG, "Failed to store ethernet config: " + e);
         } finally {
-            try { writer.close(); } catch(Exception e) {}
+            try {
+                if (writer != null) writer.close();
+                Slog.d(TAG, "try to close writer !");
+            }
+            catch(Exception e) {
+                Slog.d(TAG, "Exception !");
+            }
         }
     }
 
@@ -365,13 +369,13 @@ public class EthernetService extends IEthernetManager.Stub {
         mNetd = INetworkManagementService.Stub.asInterface(
                 ServiceManager.getService(Context.NETWORKMANAGEMENT_SERVICE)
                 );
-
-        try {
-            mNetd.registerObserver(new NetworkManagementEventObserver());
-        } catch (RemoteException e) {
-            Slog.e(TAG, "Remote NetworkManagementService error: " + e);
+        if (mNetd != null) {
+            try {
+                mNetd.registerObserver(new NetworkManagementEventObserver());
+            } catch (RemoteException e) {
+                Slog.e(TAG, "Remote NetworkManagementService error: " + e);
+            }
         }
-
         IntentFilter filter = new IntentFilter();
         filter.addAction(EthernetManager.INTERFACE_STATE_CHANGED_ACTION);
         filter.addAction(Intent.ACTION_SCREEN_ON);
@@ -380,7 +384,9 @@ public class EthernetService extends IEthernetManager.Stub {
 
         HandlerThread ethernetThread = new HandlerThread("EthernetService");
         ethernetThread.start();
+        if (ethernetThread.getLooper() == null) return;
         mAsyncServiceHandler = new AsyncServiceHandler(ethernetThread.getLooper());
+        if (mAsyncServiceHandler == null) return;
 
         try {
             if (DBG) Slog.d(TAG, "Reading " + PERSIST_FILE);
@@ -399,7 +405,10 @@ public class EthernetService extends IEthernetManager.Stub {
         } catch (IllegalStateException e) {
             Slog.e(TAG, "Invalid JSON in " + PERSIST_FILE + ": " + e);
             File f = new File(PERSIST_FILE);
-            try { f.delete(); } catch (Exception ex) {}
+            try { f.delete(); }
+            catch (Exception ex) {
+                Slog.d(TAG, "Exception !");
+            }
         }
 
         for (String iface : getInterfaceNames()) {
@@ -468,12 +477,8 @@ public class EthernetService extends IEthernetManager.Stub {
 
     private void sendMessage(StateMachine sm, int what, Parcelable obj) {
         Message msg = sm.obtainMessage(what);
+        if (msg == null) return;
         msg.obj = obj;
-        sm.sendMessage(msg);
-    }
-
-    private void sendMessage(StateMachine sm, int what) {
-        Message msg = sm.obtainMessage(what);
         sm.sendMessage(msg);
     }
 

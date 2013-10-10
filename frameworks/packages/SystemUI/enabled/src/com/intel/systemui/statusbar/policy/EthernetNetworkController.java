@@ -131,13 +131,16 @@ final public class EthernetNetworkController {
 
     public void updateEthernetState(Intent intent, int inetCondition) {
         final String action = intent.getAction();
+        if (action == null) return;
 
         if( action.equals(EthernetManager.NETWORK_STATE_CHANGED_ACTION)) {
             mEthernetEnabled = true;
             final EthernetInfo ei = (EthernetInfo)
                     intent.getParcelableExtra(EthernetManager.EXTRA_ETHERNET_INFO);
-            final NetworkInfo networkInfo = ei.getNetworkInfo();
-            mEthernetConnected = networkInfo != null && networkInfo.isConnected();
+            if (ei != null) {
+                final NetworkInfo networkInfo = ei.getNetworkInfo();
+                mEthernetConnected = networkInfo != null && networkInfo.isConnected();
+            }
         }
         updateEthernetIcons(inetCondition);
     }
@@ -169,8 +172,6 @@ final public class EthernetNetworkController {
         pw.println(mEthernetEnabled);
         pw.print("  mEthernetConnected=");
         pw.println(mEthernetConnected);
-        pw.println(String.format("  mEthernetIconId=0x%08x/%s",
-                mEthernetIconId, getResourceName(mEthernetIconId)));
         pw.print("  mEthernetActivity=");
         pw.println(mEthernetActivity);
     }

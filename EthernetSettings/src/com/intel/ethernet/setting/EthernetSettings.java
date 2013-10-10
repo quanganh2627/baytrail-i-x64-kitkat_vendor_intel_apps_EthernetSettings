@@ -111,15 +111,39 @@ public class EthernetSettings extends PreferenceActivity
     }
 
     private void updatePreferencesScanning(EthernetInfo info) {
-        findPreference("ethernet_ip_settings").setSummary("Waiting for connection");
-
-        findPreference("ethernet_ip_address").setEnabled(false);
-        findPreference("ethernet_netmask").setEnabled(false);
-        findPreference("ethernet_default_gateway").setEnabled(false);
-        findPreference("ethernet_dns").setEnabled(false);
-        findPreference("ethernet_proxy_server").setEnabled(false);
-        findPreference("ethernet_proxy_port").setEnabled(false);
-        findPreference("ethernet_proxy_exclusion").setEnabled(false);
+        Preference checkPerference;
+        checkPerference = findPreference("ethernet_ip_settings");
+        if (checkPerference != null) {
+            checkPerference.setSummary("Waiting for connection");
+        }
+        checkPerference = findPreference("ethernet_ip_address");
+        if (checkPerference != null) {
+            checkPerference.setEnabled(false);
+        }
+        checkPerference = findPreference("ethernet_netmask");
+        if (checkPerference != null) {
+            checkPerference.setEnabled(false);
+        }
+        checkPerference = findPreference("ethernet_default_gateway");
+        if (checkPerference != null) {
+            checkPerference.setEnabled(false);
+        }
+        checkPerference = findPreference("ethernet_dns");
+        if (checkPerference != null) {
+            checkPerference.setEnabled(false);
+        }
+        checkPerference = findPreference("ethernet_proxy_server");
+        if (checkPerference != null) {
+            checkPerference.setEnabled(false);
+        }
+        checkPerference = findPreference("ethernet_proxy_port");
+        if (checkPerference != null) {
+            checkPerference.setEnabled(false);
+        }
+        checkPerference = findPreference("ethernet_proxy_exclusion");
+        if (checkPerference != null) {
+            checkPerference.setEnabled(false);
+        }
     }
 
     private void updatePreferences(EthernetInfo info) {
@@ -139,11 +163,18 @@ public class EthernetSettings extends PreferenceActivity
 
         if (info != null) {
             addPreferencesFromResource(R.xml.ethernet_settings);
-            Preference changeSettings = findPreference("ethernet_change_settings");
-            changeSettings.setOnPreferenceClickListener(this);
-
-            findPreference("ethernet_interface_name").setSummary(info.getName());
-            findPreference("ethernet_mac_address").setSummary(info.getHwAddress());
+            Preference changePreference = findPreference("ethernet_change_settings");
+            if (changePreference != null) {
+                changePreference.setOnPreferenceClickListener(this);
+            }
+            changePreference = findPreference("ethernet_interface_name");
+            if (changePreference != null) {
+                changePreference.setSummary(info.getName());
+            }
+            changePreference = findPreference("ethernet_mac_address");
+            if (changePreference != null) {
+                changePreference.setSummary(info.getHwAddress());
+            }
             if (DEBUG) Log.d(TAG, "ethernet_interface_name" + info.getName());
             if (DEBUG) Log.d(TAG, "ethernet_mac_address" + info.getHwAddress());
             if (DEBUG) Log.d(TAG, "info.getDetailedState()" + info.getDetailedState());
@@ -200,14 +231,38 @@ public class EthernetSettings extends PreferenceActivity
             if (DEBUG) Log.d(TAG, "proxyPort" + proxyPort);
             if (DEBUG) Log.d(TAG, "proxyExclusion" + proxyExclusion);
 
-            findPreference("ethernet_ip_settings").setSummary(ipAssignment);
-            findPreference("ethernet_ip_address").setSummary(ipAddress);
-            findPreference("ethernet_netmask").setSummary(netmask);
-            findPreference("ethernet_default_gateway").setSummary(defaultGateway);
-            findPreference("ethernet_dns").setSummary(dns);
-            findPreference("ethernet_proxy_server").setSummary(proxyHost);
-            findPreference("ethernet_proxy_port").setSummary(proxyPort);
-            findPreference("ethernet_proxy_exclusion").setSummary(proxyExclusion);
+            changePreference = findPreference("ethernet_ip_settings");
+            if (changePreference != null) {
+                changePreference.setSummary(ipAssignment);
+            }
+            changePreference = findPreference("ethernet_ip_address");
+            if (changePreference != null) {
+                changePreference.setSummary(ipAddress);
+            }
+            changePreference = findPreference("ethernet_netmask");
+            if (changePreference != null) {
+                changePreference.setSummary(netmask);
+            }
+            changePreference = findPreference("ethernet_default_gateway");
+            if (changePreference != null) {
+                changePreference.setSummary(defaultGateway);
+            }
+            changePreference = findPreference("ethernet_dns");
+            if (changePreference != null) {
+                changePreference.setSummary(dns);
+            }
+            changePreference = findPreference("ethernet_proxy_server");
+            if (changePreference != null) {
+                changePreference.setSummary(proxyHost);
+            }
+            changePreference = findPreference("ethernet_proxy_port");
+            if (changePreference != null) {
+                changePreference.setSummary(proxyPort);
+            }
+            changePreference = findPreference("ethernet_proxy_exclusion");
+            if (changePreference != null) {
+                changePreference.setSummary(proxyExclusion);
+            }
         }
     }
 
@@ -216,11 +271,13 @@ public class EthernetSettings extends PreferenceActivity
         if (button == AlertDialog.BUTTON_POSITIVE) {
             if (mDialog == null) {
                 if (DEBUG) Log.d(TAG, "mDialog == null");
+                return;
             } else if (mDialog.getController() == null) {
                 if (DEBUG) Log.d(TAG, "mDialog.getController() == null");
                 return;
             } else if (mDialog.getController().getInfo() == null) {
                 if (DEBUG) Log.d(TAG, "mDialog.getController().getInfo()");
+                return;
             }
 
             if (DEBUG) Log.d(TAG, "mDialog.getController().getInfo()"
