@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Copyright (C) 2013 Intel Corporation, All Rights Reserved
+
+     Licensed under the Apache License, Version 2.0 (the "License");
+     you may not use this file except in compliance with the License.
+     You may obtain a copy of the License at
+
+          http://www.apache.org/licenses/LICENSE-2.0
+
+     Unless required by applicable law or agreed to in writing, software
+     distributed under the License is distributed on an "AS IS" BASIS,
+     WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+     See the License for the specific language governing permissions and
+     limitations under the License.
+-->
+
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+        package="com.intel.ethernet.setting"
+        coreApp="true"
+        android:sharedUserId="android.uid.system">
+
+    <original-package android:name="com.intel.ethernet" />
+
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.WRITE_SETTINGS" />
+    <uses-permission android:name="android.permission.CHANGE_CONFIGURATION" />
+
+    <application android:label="@string/ethernet_settings_title"
+            android:taskAffinity=""
+            android:theme="@android:style/Theme.Holo"
+            android:uiOptions="splitActionBarWhenNarrow"
+            android:hardwareAccelerated="true">
+
+        <!-- Settings -->
+        <activity android:name="EthernetSettings" android:label="@string/ethernet_settings_title">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <action android:name="com.intel.ethernet.ETHERNET_SETTING" />
+                <category android:name="android.intent.category.DEFAULT" />
+            </intent-filter>
+            <meta-data android:name="com.android.settings.icon" android:resource="@drawable/ic_settings_ethernet"/>
+            <meta-data android:name="com.android.settings.title" android:resource="@string/ethernet_settings_title"/>
+        </activity>
+
+    </application>
+</manifest>
