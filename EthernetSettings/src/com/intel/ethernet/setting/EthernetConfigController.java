@@ -85,10 +85,13 @@ public class EthernetConfigController implements TextWatcher,
         final Context context = mConfigUi.getContext();
         final Resources resources = context.getResources();
         mIpSettingsSpinner = (Spinner) mView.findViewById(R.id.ip_settings);
-        mIpSettingsSpinner.setOnItemSelectedListener(this);
+        if (mIpSettingsSpinner != null) {
+            mIpSettingsSpinner.setOnItemSelectedListener(this);
+        }
         mProxySettingsSpinner = (Spinner) mView.findViewById(R.id.proxy_settings);
-        mProxySettingsSpinner.setOnItemSelectedListener(this);
-
+        if (mProxySettingsSpinner != null) {
+            mProxySettingsSpinner.setOnItemSelectedListener(this);
+        }
         EthernetInfo info = mEthernetManager.getCurrentInterface();
         if (info != null) {
             mConfigUi.setTitle("Ethernet Settings");
@@ -128,11 +131,21 @@ public class EthernetConfigController implements TextWatcher,
 
             showIpConfigFields(info);
             showProxyFields(info);
-            mView.findViewById(R.id.ethernet_advanced_toggle).setVisibility(View.VISIBLE);
-            mView.findViewById(R.id.ethernet_advanced_togglebox).setOnClickListener(this);
+            View findViewId;
+            findViewId = mView.findViewById(R.id.ethernet_advanced_toggle);
+            if (findViewId != null) {
+                findViewId.setVisibility(View.VISIBLE);
+            }
+            findViewId = mView.findViewById(R.id.ethernet_advanced_togglebox);
+            if (findViewId != null) {
+                findViewId.setOnClickListener(this);
+            }
             if (showAdvancedFields) {
-                ((CheckBox) mView.findViewById(R.id.ethernet_advanced_togglebox)).setChecked(true);
-                mView.findViewById(R.id.ethernet_advanced_fields).setVisibility(View.VISIBLE);
+                ((CheckBox) findViewId).setChecked(true);
+                findViewId = mView.findViewById(R.id.ethernet_advanced_fields);
+                if (findViewId != null) {
+                    findViewId.setVisibility(View.VISIBLE);
+                }
             }
 
             mConfigUi.setSubmitButton(context.getString(R.string.ethernet_save));
@@ -146,9 +159,11 @@ public class EthernetConfigController implements TextWatcher,
 
     EthernetInfo getInfo() {
         EthernetInfo result = new EthernetInfo();
-
-        result.setName(mEthernetManager.getCurrentInterface().getName());
-        result.setHwAddress(mEthernetManager.getCurrentInterface().getHwAddress());
+        EthernetInfo currentInterface = mEthernetManager.getCurrentInterface();
+        if (currentInterface != null) {
+            result.setName(currentInterface.getName());
+            result.setHwAddress(currentInterface.getHwAddress());
+        }
         result.setInterfaceStatus(mInterfaceStatus);
         result.setProxySettings(mProxySettings);
         result.setLinkProperties(mLinkProperties);
@@ -175,29 +190,40 @@ public class EthernetConfigController implements TextWatcher,
 
     private void addRow(ViewGroup group, int name, String value) {
         View row = mConfigUi.getLayoutInflater().inflate(R.layout.ethernet_dialog_row, group, false);
-        ((TextView) row.findViewById(R.id.name)).setText(name);
-        ((TextView) row.findViewById(R.id.value)).setText(value);
+        if (row == null) return;
+        View findViewId = row.findViewById(R.id.name);
+        if (findViewId != null) ((TextView) findViewId).setText(name);
+        findViewId = row.findViewById(R.id.value);
+        if (findViewId != null) ((TextView) findViewId).setText(value);
         group.addView(row);
     }
 
     private void showIpConfigFields(EthernetInfo info) {
-
-        mView.findViewById(R.id.ip_fields).setVisibility(View.VISIBLE);
+        View findViewId = mView.findViewById(R.id.ip_fields);
+        if (findViewId == null) return;
+        findViewId.setVisibility(View.VISIBLE);
 
         if (mIpSettingsSpinner.getSelectedItemPosition() == STATIC_IP) {
-            mView.findViewById(R.id.staticip).setVisibility(View.VISIBLE);
+            findViewId = mView.findViewById(R.id.staticip);
+            if (findViewId != null) findViewId.setVisibility(View.VISIBLE);
             if (mIpAddressView == null) {
                 mIpAddressView = (TextView) mView.findViewById(R.id.ipaddress);
-                mIpAddressView.addTextChangedListener(this);
+                if (mIpAddressView != null) mIpAddressView.addTextChangedListener(this);
                 mGatewayView = (TextView) mView.findViewById(R.id.gateway);
-                mGatewayView.addTextChangedListener(this);
+                if (mGatewayView != null) mGatewayView.addTextChangedListener(this);
                 mNetworkPrefixLengthView = (TextView) mView.findViewById(
                         R.id.network_prefix_length);
-                mNetworkPrefixLengthView.addTextChangedListener(this);
+                if (mNetworkPrefixLengthView != null) {
+                    mNetworkPrefixLengthView.addTextChangedListener(this);
+                }
                 mDns1View = (TextView) mView.findViewById(R.id.dns1);
-                mDns1View.addTextChangedListener(this);
+                if (mDns1View != null) {
+                    mDns1View.addTextChangedListener(this);
+                }
                 mDns2View = (TextView) mView.findViewById(R.id.dns2);
-                mDns2View.addTextChangedListener(this);
+                if (mDns2View != null) {
+                    mDns2View.addTextChangedListener(this);
+                }
             }
             if (info != null) {
                 LinkProperties linkProperties = info.getLinkProperties();
@@ -226,24 +252,29 @@ public class EthernetConfigController implements TextWatcher,
                 }
             }
         } else {
-            mView.findViewById(R.id.staticip).setVisibility(View.GONE);
+            findViewId = mView.findViewById(R.id.staticip);
+            if (findViewId != null) findViewId.setVisibility(View.GONE);
         }
     }
 
     private void showProxyFields(EthernetInfo info) {
-
-        mView.findViewById(R.id.proxy_settings_fields).setVisibility(View.VISIBLE);
+        View findViewId = mView.findViewById(R.id.proxy_settings_fields);
+        if (findViewId != null) findViewId.setVisibility(View.VISIBLE);
 
         if (mProxySettingsSpinner.getSelectedItemPosition() == PROXY_STATIC) {
-            mView.findViewById(R.id.proxy_warning_limited_support).setVisibility(View.VISIBLE);
-            mView.findViewById(R.id.proxy_fields).setVisibility(View.VISIBLE);
+            findViewId = mView.findViewById(R.id.proxy_warning_limited_support);
+            if (findViewId != null) findViewId.setVisibility(View.VISIBLE);
+            findViewId = mView.findViewById(R.id.proxy_fields);
+            if (findViewId != null) findViewId.setVisibility(View.VISIBLE);
             if (mProxyHostView == null) {
                 mProxyHostView = (TextView) mView.findViewById(R.id.proxy_hostname);
-                mProxyHostView.addTextChangedListener(this);
+                if (mProxyPortView != null) mProxyHostView.addTextChangedListener(this);
                 mProxyPortView = (TextView) mView.findViewById(R.id.proxy_port);
-                mProxyPortView.addTextChangedListener(this);
+                if (mProxyPortView != null) mProxyPortView.addTextChangedListener(this);
                 mProxyExclusionListView = (TextView) mView.findViewById(R.id.proxy_exclusionlist);
-                mProxyExclusionListView.addTextChangedListener(this);
+                if (mProxyExclusionListView != null) {
+                    mProxyExclusionListView.addTextChangedListener(this);
+                }
             }
             if (info != null) {
                 ProxyProperties proxyProperties = info.getLinkProperties().getHttpProxy();
@@ -254,8 +285,10 @@ public class EthernetConfigController implements TextWatcher,
                 }
             }
         } else {
-            mView.findViewById(R.id.proxy_warning_limited_support).setVisibility(View.GONE);
-            mView.findViewById(R.id.proxy_fields).setVisibility(View.GONE);
+            findViewId = mView.findViewById(R.id.proxy_warning_limited_support);
+            if (findViewId != null) findViewId.setVisibility(View.GONE);
+            findViewId = mView.findViewById(R.id.proxy_fields);
+            if (findViewId != null) findViewId.setVisibility(View.GONE);
         }
     }
 
@@ -388,7 +421,9 @@ public class EthernetConfigController implements TextWatcher,
                 addr[addr.length-1] = 1;
                 mGatewayView.setText(InetAddress.getByAddress(addr).getHostAddress());
             } catch (RuntimeException ee) {
+                Log.d(TAG, "RuntimeException !");
             } catch (java.net.UnknownHostException u) {
+                Log.d(TAG, "UnknowHostException !");
             }
         } else {
             InetAddress gatewayAddr = null;

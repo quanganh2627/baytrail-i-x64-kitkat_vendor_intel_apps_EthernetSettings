@@ -127,9 +127,11 @@ public class EthernetManager implements NetworkStateTracker {
     private class EthernetStateReceiver extends BroadcastReceiver {
         @Override
         public void onReceive(Context context, Intent intent) {
-            if (intent.getAction().equals(NETWORK_STATE_CHANGED_ACTION)) {
+            if ((intent != null) && (intent.getAction() != null) &&
+                    intent.getAction().equals(NETWORK_STATE_CHANGED_ACTION)) {
                 EthernetInfo ei = (EthernetInfo) intent.getParcelableExtra(
                         EthernetManager.EXTRA_ETHERNET_INFO);
+                if (ei == null) return;
                 mLinkProperties = ei.getLinkProperties();
                 mNetworkInfo = ei.getNetworkInfo();
                 Message msg = mCsHandler.obtainMessage(EVENT_STATE_CHANGED,
